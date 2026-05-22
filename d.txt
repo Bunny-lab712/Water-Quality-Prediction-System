@@ -1,0 +1,437 @@
+										Microsoft cyber security Training
+============================================================================================================================================================================================
+DHCP =  dynamic host configuration portal
+APIP= automatic private internet protocol addressing
+
+DHCP: The Professional Manager
+Think of DHCP as a landlord. When your computer (the client) joins a network, it asks, "Can I have an address?" The DHCP server checks its list of available numbers and assigns one, along with the "house rules" (the Subnet Mask and Gateway).
+
+IP Range: Usually defined by the administrator (e.g., 192.168.x.x).
+
+Goal: Centralized, organized address management.
+
+APIPA: The Emergency DIY
+If the computer asks for an address and no DHCP server responds (perhaps the server is down or the cable is unplugged), the computer doesn't just give up. It uses APIPA to assign itself a "temporary" address so it can still talk to other devices in the same room.
+
+The Signature Range: APIPA always uses the range 169.254.0.1 to 169.254.255.254.
+
+The Limitation: If you see a 169.254.x.x address, you can talk to local printers or computers, but you cannot get on the internet.
+
+protocols
+
+Protocol to Use
+Transfer a Webpage          HTTP / HTTPS
+Send an IoT Sensor Reading  MQTT / WebSockets
+Remotely Access a Server    SSH
+Ensure No Data is Lost      TCP
+Fastest Possible Speed      UDP
+Find an IP from a Domain    DNS
+Troubleshoot a Connection   ICMP (Ping)
+
+TCP/IP vs OSI layer
+OSI Model (7 Layers),TCP/IP Model (4/5 Layers),What happens here?
+7. Application User-facing protocols (HTTP, SMTP, MQTT)"
+6. Presentation,(Combined into Application),Data encryption and formatting
+5. Session,(Combined into Application),"Managing the connection ""dialogue"""
+4. Transport, Reliability (TCP) vs. Speed (UDP)
+3. Network, Internet, Routing and IP addressing
+2. Data Link, Network Access, Hardware addressing (MAC) and Switches
+1. Physical,(Combined into Network Access),"Cables, bits, and radio waves"
+
+
+CIA Traid
+
+confidentiality = This ensures that sensitive data on a drive is accessible only to authorized users.
+
+integrity = guarantees that the data on the drive is trustworthy and has not been tampered with or corrupted—either by a hacker or a hardware error.
+
+Availability (Accessibility) = This ensures that the drive and the data it holds are ready and reachable whenever an authorized user needs them.
+
+Why it matters for your project
+For your Smart IoT Irrigation System, the CIA triad is vital:
+
+Confidentiality: Ensures only you can access your farm's private data.
+
+Integrity: Prevents anyone from "faking" water level data to trick your Deep Learning models.
+
+Availability: Ensures that even if the Wi-Fi drops, your SD card backup keeps the data accessible for later syncing.
+
+TCP vs. UDP (The Delivery Method)
+TCP (Transmission Control Protocol): Reliable and ordered.
+
+Example: Syncing to Google Sheets. You need 100% of the data for your 96% accuracy LSTM model.
+UDP (User Datagram Protocol): Fast but "lossy."
+Example: A Live Farm Camera. If a few pixels drop during a storm, the video keeps playing without pausing to re-send.
+
+============================================================================================================================================================================================
+
+The TCP/IP Data Flowchart (Drone Example)
+
+1. Application Layer (The Message)
+Action: Your Python code on the drone creates the message.
+Data Unit: Data
+Content: {"alert": "Low Battery", "value": 10}
+Protocol: MQTT (The "Language" of the drone).
+
+2. Transport Layer (The Delivery Choice)
+Action: The system decides how to send it. Since it's a critical alert, it uses TCP to ensure it isn't lost. It breaks the data into pieces.
+Data Unit: Segment
+Header Added: Source Port (e.g., 5001) + Destination Port (1883 for MQTT).
+Analogy: Putting the letter in an Envelope with a tracking number.
+
+3. Internet Layer (The Global GPS)
+Action: The segment needs to find the server's location on the internet.
+Data Unit: Packet
+Header Added: Source IP (Drone's IP) + Destination IP (Server's IP).
+Analogy: Writing the Mailing Address on the envelope.
+
+4. Network Access Layer (The Hardware Path)
+Action: Preparing the packet for the physical Wi-Fi hardware.
+Data Unit: Frame
+Header Added: Source MAC (Drone's Wi-Fi Chip) + Destination MAC (The Router).
+Analogy: Putting the envelope in a Delivery Truck.
+
+5. Physical Layer (The Signal)
+Action: The frame is turned into raw energy.
+Data Unit: Bits (0s and 1s).
+Medium: The Drone's antenna sends Radio Waves through the air.
+
+
+The Sender (Moving DOWN the stack)
+
+ This process is called Encapsulation. The ESP32 acts as the factory, putting the message into progressively larger, more secure shipping containers.
+
+ Application (Layer 7): The Python/C++ code on your ESP32 creates the actual message: "Moisture: 30%".
+
+ Presentation (Layer 6): The factory translates this text into a standard format (like JSON) and maybe encrypts it so hackers can't read it.
+
+ Session (Layer 5): The factory opens a dedicated "communication channel" with the server, like dialing a phone number before speaking.
+
+ Transport (Layer 4): The message is put into a shipping box. The factory stamps Port Numbers on it (e.g., Port 1883 for MQTT) so the receiving server knows which specific app should     handle it. It is now a Segment.
+
+ Network (Layer 3): The box is put into a mailbag. The factory slaps the IP Addresses (Source: ESP32 IP, Destination: Server IP) on the outside so the internet routers know where to drive it. It is now a Packet.
+
+ Data Link (Layer 2): The mailbag is loaded into a local delivery truck. The factory adds the MAC Addresses (the physical hardware IDs) to get it from the ESP32 chip to your local Wi-Fi router. It is now a Frame.
+
+ Physical (Layer 1): The truck leaves the factory. The frame is converted into raw Radio Waves (Wi-Fi) and binary code (1010101) to fly through the air.
+
+Phase 2: The Journey
+
+ The binary bits travel through the air to your router, then through fiber optic cables under the street, bouncing between various routers on the internet until they arrive at the physical  hardware of your server.
+
+Phase 3: The Receiver (Moving UP the stack)
+
+ This process is called De-encapsulation. The server receives the package and starts opening the boxes one by one, checking the labels at every stop.
+
+ Physical (Layer 1): The server's network card detects the incoming electrical signals and turns them back into a digital Frame.
+
+ Data Link (Layer 2): The server checks the MAC Address. "Is this frame for my hardware?" Yes. It rips off the MAC label and hands the Packet up.
+
+ Network (Layer 3): The server checks the IP Address. "Is this packet meant for my IP?" Yes. It rips off the IP label and hands the Segment up.
+
+ Transport (Layer 4): The server checks the Port Number (1883). "Ah, this goes to the MQTT database software." It rips off the Port label, reassembles any broken pieces, and hands the data  up.
+
+ Session (Layer 5): The server acknowledges the open connection with the ESP32.
+
+ Presentation (Layer 6): The server decrypts the data and translates the JSON back into readable text.
+
+ Application (Layer 7): The database software finally receives the raw, original message: "Moisture: 30%". It triggers the command to turn on the water.
+
+
+============================================================================================================================================================================================
+
+Worm: The "Forest Fire"
+
+Unlike a virus, a worm does not need a human to click it, open it, or trigger it. Once it is on a network, it exploits a vulnerability in the operating system to automatically copy itself to the next machine, then the next, spreading like a wildfire.
+
+The Goal: Rapid infection and network disruption (often just by clogging up bandwidth).
+
+Unique Example (Stuxnet - 2010): This is arguably the most famous piece of malware ever written. It was a highly targeted worm designed to sabotage Iran's nuclear program. It spread silently via USB drives. Once inside the nuclear facility, it hunted for specific industrial programmable logic controllers (PLCs) and caused the physical centrifuges to spin out of control and destroy themselves, all while playing back normal sensor data to the engineers so they wouldn't notice.
+
+2. Ransomware: The "Digital Kidnapper"
+Ransomware doesn't necessarily steal your data to sell it; it locks you out of it. It encrypts your files using complex cryptography and demands a ransom (usually in Bitcoin) for the decryption key.
+
+The Goal: Extortion and financial gain.
+
+Unique Example (WannaCry - 2017): WannaCry was a nightmare because it combined Ransomware with a Worm. It didn't wait for people to download it; it actively spread across the internet using a leaked NSA exploit called "EternalBlue." It infected hundreds of thousands of computers globally, including the UK's National Health Service, locking doctors out of patient records and demanding $300 to unlock the screens.
+
+3. Spyware: The "Invisible Detective"
+Spyware sits quietly in the background, observing everything you do. It logs your keystrokes (to steal passwords), watches your screen, and monitors your network traffic, quietly sending that data back to the attacker.
+
+The Goal: Espionage, identity theft, and data harvesting.
+
+Unique Example (Pegasus): Developed by the NSO Group, Pegasus is military-grade spyware. It uses "zero-click" exploits—meaning it can infect a phone simply by receiving a malicious iMessage or WhatsApp call, even if you never answer it or click a link. Once installed, it has full access to the phone's camera, microphone, encrypted messages, and GPS.
+
+4. The Trojan: The "Counterfeit Delivery"
+Named after the wooden horse of Troy, this malware disguises itself as something useful, fun, or legitimate to trick you into installing it. It cannot replicate itself; it relies entirely on your deception.
+
+The Goal: Creating a "backdoor" for hackers to enter your system later.
+
+Unique Example (Zeus / Zbot): Zeus was a massive banking Trojan. It usually arrived disguised as a legitimate invoice or shipping document in an email. Once downloaded, it lay dormant until the user navigated to their bank's website. It would then inject fake login fields into the real webpage, stealing the user's banking credentials and bypassing two-factor authentication.
+
+5. Botnets: The "Zombie Army"
+A botnet isn't a single piece of malware; it is a network of thousands (or millions) of infected devices that are all controlled by a single hacker (the "Botmaster"). The infected devices usually don't show any signs of being compromised until the Botmaster commands them to launch a massive coordinated attack.
+
+The Goal: Launching Distributed Denial of Service (DDoS) attacks to take down websites, or sending massive spam campaigns.
+
+Unique Example (Mirai - 2016): The Mirai botnet didn't target laptops; it targeted poorly secured IoT devices. It scanned the internet for smart cameras, routers, and connected sensors that still had factory default passwords (like admin/admin). It enslaved hundreds of thousands of these devices and used them to launch a massive DDoS attack that temporarily took down major chunks of the internet, including Twitter, Netflix, and Reddit.
+
+============================================================================================================================================================================================
+
+SSH
+
+
+Feature	Details
+Full Name	Secure Shell
+OSI Layer	Layer 7 (Application Layer)
+Transport Protocol	Uses TCP (to ensure no typed commands are lost)
+Standard Port	Port 22
+Primary Use	Secure remote command-line access, secure file transfer (SFTP).
+
+How It Works: Passwords vs. Keys
+When you connect to a server via SSH (usually by typing ssh username@ip_address in your terminal), the server needs to verify you are who you say you are. There are two ways to do this:
+
+1. The Amateur Way: Passwords
+You type your username and a password. It is encrypted through the tunnel, but it is still vulnerable to "Brute Force" attacks (where a botnet tries millions of passwords a second until it guesses yours).
+
+2. The Professional Way: SSH Keys (Asymmetric Cryptography)
+Instead of a password, you generate a pair of cryptographic keys on your laptop:
+
+The Public Key: You put this lock on your remote server. (It’s safe to share).
+
+The Private Key: This stays securely on your laptop. (Never share this).
+
+When you try to log in, the server checks if your Private Key fits the Public Key lock. If it does, you are instantly logged in—no password required, and it is mathematically impossible to brute-force.
+
+===========================================================================================================================================================================================
+
+
+VPN(virtual private network)
+
+Feature,Details
+OSI Layer,Usually Layer 3 (Network) via IPsec or Layer 4 (Transport) via OpenVPN/WireGuard.
+The Magic Trick,Encapsulation: It takes your standard IP Packet and wraps it entirely inside another encrypted IP Packet.
+Primary Goal,"Privacy (hiding your IP), Security (encryption on public Wi-Fi), and Remote Access."
+
+Without a VPN (The Open Road)
+Your Laptop: Has a Private IP (192.168.1.5) from the coffee shop.
+The Coffee Shop Router: Translates that to its Public IP (203.0.113.50).
+The Cloud Server: Sees traffic coming from 203.0.113.50 and knows you are at the coffee shop. The coffee shop owner can see you are connecting to that server.
+
+With a VPN (The Secret Tunnel)
+Your Laptop: Connects to your VPN. The VPN software gives your laptop a new, virtual Private IP (e.g., 10.8.0.2).
+The Coffee Shop Router: Only sees encrypted gibberish flowing to one specific place: The VPN Server. It cannot see what websites you are visiting.
+The Cloud Server: Sees traffic coming from the VPN's Public IP (198.51.100.99). It has no idea you are at the coffee shop; it thinks you are wherever the VPN server is located.
+
+
+Normal Traffic vs. VPN Traffic
+The reason the word "traffic" is used so often when talking about VPNs is because a VPN dramatically changes how that traffic behaves.
+
+1. Normal Internet Traffic (No VPN)
+Imagine you are driving a car with transparent glass windows on a public public highway.
+
+Your Internet Service Provider (like Jio or Airtel) is the toll booth. They can see your car, they know your license plate (Public IP), and they can look through the windows to see exactly what you are carrying (the websites you are visiting).
+
+2. VPN Traffic (The Secure Tunnel)
+When you turn on a VPN, it takes all your "cars" (data packets) and routes them through a private, concrete tunnel built right in the middle of the public highway.
+
+The traffic is now Encrypted (turned into unreadable ciphertext).
+
+The toll booth (your ISP) knows you are on the highway, but they only see a solid concrete pipe. They cannot see your cars, your license plate, or what you are carrying inside. They only know that your "traffic" is going to a VPN server.
+============================================================================================================================================================================================
+ 
+CISCO PACKET TRACER
+This is the complete operational playbook. You do not just read these commands; you execute them in order. If you skip a step, the entire architecture fails. 
+
+Here is the exact sequence to bring a bare-metal router online, secure it with an Access Control List, and execute an authorized file transfer across the segmented network.
+
+### Phase 1: Router Network Configuration (Layer 3 Topology)
+You must first assign IP addresses to the router's physical interfaces so it can route traffic between your PCs and your Server.
+
+Open the **Router CLI** and execute these commands:
+
+```text
+enable
+configure terminal
+
+! 1. Configure the Default Gateway for the PCs (Network A)
+interface GigabitEthernet0/0
+ip address 192.168.1.1 255.255.255.0
+no shutdown
+exit
+
+! 2. Configure the Default Gateway for the Server (Network B)
+interface GigabitEthernet0/1
+ip address 200.200.200.1 255.255.255.0
+no shutdown
+exit
+```
+
+### Phase 2: Router Security Configuration (Firewall/ACL)
+Before you send data, you lock down the network. We will explicitly block PC 2 (`192.168.1.11`) from accessing the FTP service, while allowing PC 1 (`192.168.1.10`) to pass.
+
+Stay in the **Router CLI** and execute:
+
+```text
+! 1. Create the rule denying PC 2 access to the Server's FTP port (Port 21)
+access-list 100 deny tcp host 192.168.1.11 host 200.200.200.254 eq 21
+
+! 2. Create the rule allowing all other traffic to function normally
+access-list 100 permit ip any any
+
+! 3. Apply the rule to the doorway facing the PCs
+interface GigabitEthernet0/0
+ip access-group 100 in
+exit
+
+! 4. Save the configuration to memory
+write memory
+```
+
+### Phase 3: GUI Prerequisites (Do Not Skip)
+The command line cannot do everything in Packet Tracer. You must manually configure the end devices via their desktop GUI tabs before proceeding to Phase 4.
+
+1. **PC 1 IP Configuration:** Set IP to `192.168.1.10`, Mask `255.255.255.0`, Gateway `192.168.1.1`.
+2. **PC 2 IP Configuration:** Set IP to `192.168.1.11`, Mask `255.255.255.0`, Gateway `192.168.1.1`.
+3. **Server IP Configuration:** Set IP to `200.200.200.254`, Mask `255.255.255.0`, Gateway `200.200.200.1`.
+4. **Server Services:** Turn **FTP On** and add user `admin` with password `cisco` (checking all permissions).
+5. **PC 1 Text Editor:** Create a file named `data.txt` and save it.
+
+### Phase 4: Authorized Data Transfer
+Now you prove the network works and the firewall is doing its job. You will execute this from the authorized machine: **PC 1**.
+
+Open the **PC 1 Command Prompt** and execute:
+
+```text
+! 1. Verify routing is functional (the first ping may time out, let it finish)
+ping 200.200.200.254
+
+! 2. Initiate the FTP connection
+ftp 200.200.200.254
+
+! 3. The system will prompt for credentials. Type them exactly as created.
+Username: admin
+Password: cisco
+
+! 4. Push the local file to the remote server
+put data.txt
+
+! 5. Verify the file arrived on the server
+dir
+
+! 6. Terminate the connection
+quit
+```
+
+If you execute this list perfectly, you have successfully engineered, secured, and utilized a routed corporate network.
+===========================================================================================
+
+sip and smtp protocol
+Feature			SMTP					SIP
+Full Name	Simple Mail Transfer Protocol		Session Initiation Protocol
+Primary Use	Sending Emails				VoIP, Video Conferencing, IM
+Nature		Asynchronous (Store-and-Forward) 	Synchronous (Real-time)
+Layer		Application Layer			Application Layer
+Payload	Text,   Attachments (MIME)			Audio, Video, Multimedia
+Interaction	Server-to-Server / Client-to-Server	Peer-to-Peer (Signaling)
+
+SMTP PRACTICAL
+Since you already have the hardware connected in **Cisco Packet Tracer**, you are 80% of the way there. To make SMTP work, we need to configure the **IP addresses**, the **DNS** (so the PCs can find the mail server), and the **Email Service** itself.
+
+Follow these steps to complete your practical:
+
+---
+
+## Step 1: Configure IP Addresses
+Ensure every device has a static IP address. For example:
+* **Server:** `192.168.1.10` (Subnet: `255.255.255.0`, Gateway: `192.168.1.1`)
+* **PC0:** `192.168.1.2`
+* **PC1:** `192.168.1.3`
+* **DNS Server:** Set this to the Server's IP (`192.168.1.10`) on all PCs.
+
+---
+
+## Step 2: Configure the Mail Server
+1.  Click on the **Server** > **Services** tab.
+2.  Select **EMAIL** from the left menu.
+3.  **Domain Name:** Enter a domain (e.g., `aadhya.com`) and click **Set**.
+4.  **User Setup:** Create two users:
+    * User: `user0`, Password: `123` -> Click **+**
+    * User: `user1`, Password: `123` -> Click **+**
+5.  Ensure **SMTP Service** and **POP3 Service** are both toggled **ON**.
+
+
+
+---
+
+## Step 3: Configure DNS (Optional but Recommended)
+To make it realistic, tell the network that `aadhya.com` points to your Server.
+1.  On the **Server** > **Services** > **DNS**.
+2.  Set DNS Service to **ON**.
+3.  Name: `aadhya.com`, Address: `192.168.1.10`.
+4.  Click **Add**.
+
+---
+
+## Step 4: Configure the Mail Client on PCs
+Now, set up the "Outlook-style" client on your PCs.
+1.  Click **PC0** > **Desktop** > **Email**.
+2.  Enter the following:
+    * **Your Name:** User0
+    * **Email Address:** `user0@aadhya.com`
+    * **Incoming Mail Server:** `192.168.1.10` (or `aadhya.com`)
+    * **Outgoing Mail Server (SMTP):** `192.168.1.10`
+    * **Username:** `user0`
+    * **Password:** `123`
+3.  Click **Save**.
+4.  **Repeat** these steps for **PC1** using `user1` credentials.
+
+---
+
+## Step 5: Test the SMTP Practical
+1.  On **PC0**, in the Email app, click **Compose**.
+2.  **To:** `user1@aadhya.com`
+3.  **Subject:** Hello from PC0
+4.  Type a message and hit **Send**.
+5.  You should see "Send Success" at the bottom.
+6.  Go to **PC1** > **Desktop** > **Email** > click **Receive**. The message should appear!
+
+
+
+---
+
+### Pro-Tip: See the Protocol in Action
+To truly understand the "Practical" part, switch to **Simulation Mode** (bottom right corner).
+* Edit the **Filters** to only show **SMTP** and **DNS**.
+* Send the email again.
+* Click the **colored envelopes** as they move. You will see the **SMTP layers** and the raw commands (`MAIL FROM`, `RCPT TO`) being exchanged between the PC and the Server!
+
+Since you've worked with networking protocols before, does the flow of the SMTP packets in simulation mode match what you expected from the OSI layers?
+===========================================================================================
+
+* **SMTP (Simple Mail Transfer Protocol):** SMTP is a store-and-forward protocol used for sending and routing electronic mail across networks. 
+    * *Example:* When you hit "send" in your email client, SMTP is the protocol that pushes your message from `user0@aadhya.com` to the mail server.
+* **SIP (Session Initiation Protocol):** SIP is a signaling protocol used to initiate, maintain, and terminate real-time communication sessions like voice and video calls. 
+    * *Example:* SIP acts like a telephone operator that rings the other person's device and sets up the connection when you make a VoIP call.
+* **SMTP Practical in Packet Tracer:** This involves configuring simulated servers, PCs, and DNS records to observe how email is routed across a network. 
+    * *Example:* Assigning the server IP `192.168.1.10`, creating user accounts, and watching the SMTP packets travel between PC0 and PC1 in Simulation Mode.
+* **Firewalls:** A firewall is a network security barrier that monitors and controls incoming and outgoing traffic based on defined rules. 
+    * *Example:* A stateful inspection firewall blocking an untrusted external computer from connecting to your private home network.
+* **Network Headers:** A header contains the essential control, addressing, and protocol information attached to the front of a data packet to ensure delivery. 
+    * *Example:* The IPv4 header containing the source IP address and the destination IP address, acting just like the addresses written on the outside of a physical envelope.
+* **Network Payloads:** The payload is the actual intended message or raw data being transported inside the network packet. 
+    * *Example:* The actual text of the email you wrote, or the HTML code of a website you are loading.
+* **Firewall Inspection:** Basic firewalls only check the packet's header for allowed IPs and ports, while advanced firewalls use Deep Packet Inspection to read the payload. 
+    * *Example:* A basic packet filter checking if an email is coming from a trusted IP (Header), versus a Next-Generation Firewall opening the email to check for a malware attachment (Payload).
+======================================================================================
+
+DOD model made by America at world war 2
+first model tcp Ip(practical model)
+ISO made osi model(refernce)
+above 7 users and at 7th layer 
+layer 6th we have encryption and decryption
+5th strting and ending open doors and timeout error can be rectified by 5th layer
+
+
+
+

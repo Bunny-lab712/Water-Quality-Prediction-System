@@ -1,0 +1,9 @@
+.env
+.venv/
+venv/
+__pycache__/
+twilio.txt
+text.txt
+*.zip
+historical_crop_water_data.csv
+historical_water_data_v2.csv
