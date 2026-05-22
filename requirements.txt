@@ -6,3 +6,4 @@ requests
 plotly
 twilio
 python-dotenv
+fpdf
